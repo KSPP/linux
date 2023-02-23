@@ -452,6 +452,10 @@ __FORTIFY_INLINE bool fortify_memcpy_chk(__kernel_size_t size,
 	return false;
 }
 
+void __report_size_unknown(void) __compiletime_warning("memcpy destination buffer size is unknown");
+void __report_size_fixed(void)   __compiletime_warning("memcpy destination buffer size is fixed");
+void __report_size_dynamic(void) __compiletime_warning("memcpy destination buffer size is dynamic");
+
 #define __fortify_memcpy_chk(p, q, size, p_size, q_size,		\
 			     p_size_field, q_size_field, op) ({		\
 	const size_t __fortify_size = (size_t)(size);			\
@@ -459,6 +463,15 @@ __FORTIFY_INLINE bool fortify_memcpy_chk(__kernel_size_t size,
 	const size_t __q_size = (q_size);				\
 	const size_t __p_size_field = (p_size_field);			\
 	const size_t __q_size_field = (q_size_field);			\
+	if (__builtin_constant_p(__p_size_field)) {			\
+		if (__p_size_field == SIZE_MAX) {			\
+			__report_size_unknown();			\
+		} else {						\
+			__report_size_fixed();				\
+		}							\
+	} else {							\
+		__report_size_dynamic();				\
+	}								\
 	WARN_ONCE(fortify_memcpy_chk(__fortify_size, __p_size,		\
 				     __q_size, __p_size_field,		\
 				     __q_size_field, #op),		\

@@ -1020,6 +1020,12 @@ void __read_overflow2_field(size_t avail, size_t wanted) { }
 EXPORT_SYMBOL(__read_overflow2_field);
 void __write_overflow_field(size_t avail, size_t wanted) { }
 EXPORT_SYMBOL(__write_overflow_field);
+void __report_size_unknown(void) { }
+EXPORT_SYMBOL(__report_size_unknown);
+void __report_size_fixed(void)   { }
+EXPORT_SYMBOL(__report_size_fixed);
+void __report_size_dynamic(void) { }
+EXPORT_SYMBOL(__report_size_dynamic);
 
 void fortify_panic(const char *name)
 {
