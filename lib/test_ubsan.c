@@ -15,7 +15,7 @@ static void test_ubsan_add_overflow(void)
 {
 	volatile int val = INT_MAX;
 
-	UBSAN_TEST(CONFIG_UBSAN_SIGNED_WRAP);
+	UBSAN_TEST(CONFIG_UBSAN_INTEGER_WRAP);
 	val += 2;
 }
 
@@ -24,7 +24,7 @@ static void test_ubsan_sub_overflow(void)
 	volatile int val = INT_MIN;
 	volatile int val2 = 2;
 
-	UBSAN_TEST(CONFIG_UBSAN_SIGNED_WRAP);
+	UBSAN_TEST(CONFIG_UBSAN_INTEGER_WRAP);
 	val -= val2;
 }
 
@@ -32,7 +32,7 @@ static void test_ubsan_mul_overflow(void)
 {
 	volatile int val = INT_MAX / 2;
 
-	UBSAN_TEST(CONFIG_UBSAN_SIGNED_WRAP);
+	UBSAN_TEST(CONFIG_UBSAN_INTEGER_WRAP);
 	val *= 3;
 }
 
@@ -40,7 +40,7 @@ static void test_ubsan_negate_overflow(void)
 {
 	volatile int val = INT_MIN;
 
-	UBSAN_TEST(CONFIG_UBSAN_SIGNED_WRAP);
+	UBSAN_TEST(CONFIG_UBSAN_INTEGER_WRAP);
 	val = -val;
 }
 

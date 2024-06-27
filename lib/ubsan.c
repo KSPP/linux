@@ -44,7 +44,7 @@ const char *report_ubsan_failure(struct pt_regs *regs, u32 check_type)
 	case ubsan_shift_out_of_bounds:
 		return "UBSAN: shift out of bounds";
 #endif
-#if defined(CONFIG_UBSAN_DIV_ZERO) || defined(CONFIG_UBSAN_SIGNED_WRAP)
+#if defined(CONFIG_UBSAN_DIV_ZERO) || defined(CONFIG_UBSAN_INTEGER_WRAP)
 	/*
 	 * SanitizerKind::IntegerDivideByZero and
 	 * SanitizerKind::SignedIntegerOverflow emit
@@ -79,7 +79,7 @@ const char *report_ubsan_failure(struct pt_regs *regs, u32 check_type)
 	case ubsan_type_mismatch:
 		return "UBSAN: type mismatch";
 #endif
-#ifdef CONFIG_UBSAN_SIGNED_WRAP
+#ifdef CONFIG_UBSAN_INTEGER_WRAP
 	/*
 	 * SanitizerKind::SignedIntegerOverflow emits
 	 * SanitizerHandler::AddOverflow, SanitizerHandler::SubOverflow,
