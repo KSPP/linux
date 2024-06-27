@@ -303,6 +303,30 @@ void __ubsan_handle_negate_overflow(void *_data, void *old_val)
 }
 EXPORT_SYMBOL(__ubsan_handle_negate_overflow);
 
+void __ubsan_handle_implicit_conversion(void *_data, void *from_val, void *to_val)
+{
+	struct implicit_conversion_data *data = _data;
+	char from_val_str[VALUE_LENGTH];
+	char to_val_str[VALUE_LENGTH];
+
+	if (suppress_report(&data->location))
+		return;
+
+	val_to_string(from_val_str, sizeof(from_val_str), data->from_type, from_val);
+	val_to_string(to_val_str, sizeof(to_val_str), data->to_type, to_val);
+
+	ubsan_prologue(&data->location, "implicit-conversion");
+
+	pr_err("cannot represent %s value %s during %s %s, truncated to %s\n",
+		data->from_type->type_name,
+		from_val_str,
+		type_check_kinds[data->type_check_kind],
+		data->to_type->type_name,
+		to_val_str);
+
+	ubsan_epilogue();
+}
+EXPORT_SYMBOL(__ubsan_handle_implicit_conversion);
 
 void __ubsan_handle_divrem_overflow(void *_data, void *lhs, void *rhs)
 {
