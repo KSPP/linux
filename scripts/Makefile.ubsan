@@ -19,6 +19,7 @@ ubsan-integer-wrap-cflags-$(CONFIG_UBSAN_INTEGER_WRAP)     +=	\
 	-fsanitize=unsigned-integer-overflow			\
 	-fsanitize=implicit-signed-integer-truncation		\
 	-fsanitize=implicit-unsigned-integer-truncation		\
+	-fno-sanitize-overflow-idioms				\
 	-fsanitize-ignorelist=$(srctree)/scripts/integer-wrap-ignore.scl	\
 	-fsanitize-allowlist=$(srctree)/scripts/integer-wrap-allow.scl
 export CFLAGS_UBSAN_INTEGER_WRAP := $(ubsan-integer-wrap-cflags-y)
