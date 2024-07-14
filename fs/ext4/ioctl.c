@@ -288,7 +288,7 @@ static void memswap(void *a, void *b, size_t len)
 
 	ap = (unsigned char *)a;
 	bp = (unsigned char *)b;
-	while (len-- > 0) {
+	while (len--) {
 		swap(*ap, *bp);
 		ap++;
 		bp++;

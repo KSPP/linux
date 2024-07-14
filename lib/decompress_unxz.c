@@ -219,7 +219,7 @@ void *memmove(void *dest, const void *src, size_t size)
 			d[i] = s[i];
 	} else if (d > s) {
 		i = size;
-		while (i-- > 0)
+		while (i--)
 			d[i] = s[i];
 	}
 

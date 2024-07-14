@@ -69,7 +69,7 @@ static void hex_dump(const void *src, size_t length, size_t line_size,
 	unsigned char c;
 
 	printf("%s | ", prefix);
-	while (length-- > 0) {
+	while (length--) {
 		printf("%02X ", *address++);
 		if (!(++i % line_size) || (length == 0 && i % line_size)) {
 			if (length == 0) {

@@ -505,7 +505,7 @@ output:
 		if (flags & WIDE) {
 			const u16 *ws = (const u16 *)s;
 
-			while (len-- > 0) {
+			while (len--) {
 				u32 c32 = utf16_to_utf32(&ws);
 				u8 *s8;
 				size_t clen;
@@ -536,7 +536,7 @@ output:
 				*s8 |= c32;
 			}
 		} else {
-			while (len-- > 0)
+			while (len--)
 				PUTC(*s++);
 		}
 		/* Trailing padding with ' ' */

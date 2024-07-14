@@ -74,7 +74,7 @@ EXPORT_SYMBOL(crc8_populate_lsb);
 u8 crc8(const u8 table[CRC8_TABLE_SIZE], const u8 *pdata, size_t nbytes, u8 crc)
 {
 	/* loop over the buffer data */
-	while (nbytes-- > 0)
+	while (nbytes--)
 		crc = table[(crc ^ *pdata++) & 0xff];
 
 	return crc;

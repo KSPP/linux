@@ -280,7 +280,7 @@ static int cb710_mmc_receive(struct cb710_slot *slot, struct mmc_data *data)
 
 	cb710_mmc_fifo_hack(slot);
 
-	while (blocks-- > 0) {
+	while (blocks--) {
 		len = data->blksz;
 
 		while (len >= 16) {
@@ -322,7 +322,7 @@ static int cb710_mmc_send(struct cb710_slot *slot, struct mmc_data *data)
 	cb710_modify_port_8(slot, CB710_MMC_CONFIG2_PORT,
 		0, CB710_MMC_C2_READ_PIO_SIZE_MASK);
 
-	while (blocks-- > 0) {
+	while (blocks--) {
 		len = (data->blksz + 15) >> 4;
 		do {
 			if (!(cb710_read_port_8(slot, CB710_MMC_STATUS2_PORT)

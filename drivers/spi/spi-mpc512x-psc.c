@@ -172,7 +172,7 @@ static int mpc512x_psc_spi_transfer_rxtx(struct spi_device *spi,
 		if (txcount) {
 
 			/* fill the TX FIFO */
-			while (txcount-- > 0) {
+			while (txcount--) {
 				data = tx_buf ? *tx_buf++ : 0;
 				if (tx_len == EOFBYTE && t->cs_change)
 					setbits32(&fifo->txcmd,
@@ -209,7 +209,7 @@ static int mpc512x_psc_spi_transfer_rxtx(struct spi_device *spi,
 			 */
 			fifosz = in_be32(&fifo->rxcnt);
 			rxcount = min(fifosz, rx_len);
-			while (rxcount-- > 0) {
+			while (rxcount--) {
 				data = in_8(&fifo->rxdata_8);
 				if (rx_buf)
 					*rx_buf++ = data;

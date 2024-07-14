@@ -58,7 +58,7 @@ void *memmove(void *dest, const void *src, size_t n)
 	if (d <= s || d - s >= n)
 		return ____memcpy(dest, src, n);
 
-	while (n-- > 0)
+	while (n--)
 		d[n] = s[n];
 
 	return dest;

@@ -172,7 +172,7 @@ void cb710_sg_dwiter_write_next_block(struct sg_mapping_iter *miter, uint32_t da
 static inline void cb710_sg_dwiter_write_from_io(struct sg_mapping_iter *miter,
 	void __iomem *port, size_t count)
 {
-	while (count-- > 0)
+	while (count--)
 		cb710_sg_dwiter_write_next_block(miter, ioread32(port));
 }
 
@@ -194,7 +194,7 @@ static inline void cb710_sg_dwiter_write_from_io(struct sg_mapping_iter *miter,
 static inline void cb710_sg_dwiter_read_to_io(struct sg_mapping_iter *miter,
 	void __iomem *port, size_t count)
 {
-	while (count-- > 0)
+	while (count--)
 		iowrite32(cb710_sg_dwiter_read_next_block(miter), port);
 }
 

@@ -693,7 +693,7 @@ int snd_pcm_area_silence(const struct snd_pcm_channel_area *dst_area, size_t dst
 		/* Ima ADPCM */
 		int dstbit = dst_area->first % 8;
 		int dstbit_step = dst_area->step % 8;
-		while (samples-- > 0) {
+		while (samples--) {
 			if (dstbit)
 				*dst &= 0xf0;
 			else
@@ -707,7 +707,7 @@ int snd_pcm_area_silence(const struct snd_pcm_channel_area *dst_area, size_t dst
 		}
 	} else {
 		width /= 8;
-		while (samples-- > 0) {
+		while (samples--) {
 			memcpy(dst, silence, width);
 			dst += dst_step;
 		}
@@ -746,7 +746,7 @@ int snd_pcm_area_copy(const struct snd_pcm_channel_area *src_area, size_t src_of
 		int srcbit_step = src_area->step % 8;
 		int dstbit = dst_area->first % 8;
 		int dstbit_step = dst_area->step % 8;
-		while (samples-- > 0) {
+		while (samples--) {
 			unsigned char srcval;
 			if (srcbit)
 				srcval = *src & 0x0f;
@@ -771,7 +771,7 @@ int snd_pcm_area_copy(const struct snd_pcm_channel_area *src_area, size_t src_of
 		}
 	} else {
 		width /= 8;
-		while (samples-- > 0) {
+		while (samples--) {
 			memcpy(dst, src, width);
 			src += src_step;
 			dst += dst_step;
