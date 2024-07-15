@@ -651,15 +651,15 @@ sg_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 	mutex_unlock(&sfp->f_mutex);
 	SCSI_LOG_TIMEOUT(4, sg_printk(KERN_INFO, sdp,
 		"sg_write:   scsi opcode=0x%02x, cmd_size=%d\n", (int) opcode, cmd_size));
-/* Determine buffer size.  */
+	/* Determine buffer size but check for overflow */
+	if (count < (SZ_SG_HEADER + cmd_size)) {
+		sg_remove_request(sfp, srp);
+		return -EIO;
+	}
 	input_size = count - cmd_size;
 	mxsize = (input_size > old_hdr.reply_len) ? input_size : old_hdr.reply_len;
 	mxsize -= SZ_SG_HEADER;
 	input_size -= SZ_SG_HEADER;
-	if (input_size < 0) {
-		sg_remove_request(sfp, srp);
-		return -EIO;	/* User did not pass enough bytes for this command. */
-	}
 	hp = &srp->header;
 	hp->interface_id = '\0';	/* indicator of old interface tunnelled */
 	hp->cmd_len = (unsigned char) cmd_size;
