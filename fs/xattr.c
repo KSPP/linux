@@ -1121,8 +1121,8 @@ int xattr_list_one(char **buffer, ssize_t *remaining_size, const char *name)
 			return -ERANGE;
 		memcpy(*buffer, name, len);
 		*buffer += len;
+		*remaining_size -= len;
 	}
-	*remaining_size -= len;
 	return 0;
 }
 

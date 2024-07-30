@@ -739,8 +739,8 @@ ext4_xattr_list_entries(struct dentry *dentry, struct ext4_xattr_entry *entry,
 				memcpy(buffer, entry->e_name, entry->e_name_len);
 				buffer += entry->e_name_len;
 				*buffer++ = 0;
+				rest -= size;
 			}
-			rest -= size;
 		}
 	}
 	return buffer_size - rest;  /* total size */
