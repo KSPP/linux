@@ -336,13 +336,12 @@ xattr_find_entry(struct inode *inode, struct ext4_xattr_entry **pentry,
 			EXT4_ERROR_INODE(inode, "corrupted xattr entries");
 			return -EFSCORRUPTED;
 		}
-		cmp = name_index - entry->e_name_index;
-		if (!cmp)
-			cmp = name_len - entry->e_name_len;
-		if (!cmp)
+		if (name_index == entry->e_name_index &&
+		    name_len == entry->e_name_len) {
 			cmp = memcmp(name, entry->e_name, name_len);
-		if (cmp <= 0 && (sorted || cmp == 0))
-			break;
+			if (!cmp || (sorted && cmp < 0))
+				break;
+		}
 	}
 	*pentry = entry;
 	return cmp ? -ENODATA : 0;
