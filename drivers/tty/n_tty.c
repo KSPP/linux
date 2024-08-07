@@ -79,6 +79,8 @@
 #define ECHO_BLOCK		256
 #define ECHO_DISCARD_WATERMARK	N_TTY_BUF_SIZE - (ECHO_BLOCK + 32)
 
+#define RING_BUFFER_SIZE(head, tail) \
+	((head) < (tail) ? (head) + (N_TTY_BUF_SIZE) - (tail) : (head) - (tail))
 
 #undef N_TTY_TRACE
 #ifdef N_TTY_TRACE
@@ -133,7 +135,7 @@ struct n_tty_data {
 
 static inline size_t read_cnt(struct n_tty_data *ldata)
 {
-	return ldata->read_head - ldata->read_tail;
+	return RING_BUFFER_SIZE(ldata->read_head, ldata->read_tail);
 }
 
 static inline u8 read_buf(struct n_tty_data *ldata, size_t i)
@@ -221,7 +223,7 @@ static ssize_t chars_in_buffer(const struct tty_struct *tty)
 	const struct n_tty_data *ldata = tty->disc_data;
 	size_t head = ldata->icanon ? ldata->canon_head : ldata->commit_head;
 
-	return head - ldata->read_tail;
+	return RING_BUFFER_SIZE(head, ldata->read_tail);
 }
 
 /**
@@ -761,7 +763,7 @@ static void commit_echoes(struct tty_struct *tty)
 	/* Process committed echoes if the accumulated # of bytes
 	 * is over the threshold (and try again each time another
 	 * block is accumulated) */
-	nr = head - ldata->echo_tail;
+	nr = RING_BUFFER_SIZE(head, ldata->echo_tail);
 	if (nr < ECHO_COMMIT_WATERMARK ||
 	    (nr % ECHO_BLOCK > old % ECHO_BLOCK)) {
 		mutex_unlock(&ldata->output_lock);
@@ -1717,7 +1719,8 @@ n_tty_receive_buf_common(struct tty_struct *tty, const u8 *cp, const u8 *fp,
 		 */
 		size_t tail = smp_load_acquire(&ldata->read_tail);
 
-		room = N_TTY_BUF_SIZE - (ldata->read_head - tail);
+		room = N_TTY_BUF_SIZE -
+		       (RING_BUFFER_SIZE(ldata->read_head, tail));
 		if (I_PARMRK(tty))
 			room = DIV_ROUND_UP(room, 3);
 		room--;
@@ -1938,8 +1941,7 @@ static inline int input_available_p(const struct tty_struct *tty, int poll)
 
 	if (ldata->icanon && !L_EXTPROC(tty))
 		return ldata->canon_head != ldata->read_tail;
-	else
-		return ldata->commit_head - ldata->read_tail >= amt;
+	return RING_BUFFER_SIZE(ldata->commit_head, ldata->read_tail) >= amt;
 }
 
 /**
@@ -1970,7 +1972,7 @@ static bool copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
 	size_t head = smp_load_acquire(&ldata->commit_head);
 	size_t tail = MASK(ldata->read_tail);
 
-	n = min3(head - ldata->read_tail, N_TTY_BUF_SIZE - tail, *nr);
+	n = min3(RING_BUFFER_SIZE(head, ldata->read_tail), N_TTY_BUF_SIZE - tail, *nr);
 	if (!n)
 		return false;
 
@@ -2029,7 +2031,7 @@ static bool canon_copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
 		return false;
 
 	canon_head = smp_load_acquire(&ldata->canon_head);
-	n = min(*nr, canon_head - ldata->read_tail);
+	n = min(*nr, RING_BUFFER_SIZE(canon_head, ldata->read_tail));
 
 	tail = MASK(ldata->read_tail);
 	size = min_t(size_t, tail + n, N_TTY_BUF_SIZE);
@@ -2489,7 +2491,7 @@ static unsigned long inq_canon(struct n_tty_data *ldata)
 		return 0;
 	head = ldata->canon_head;
 	tail = ldata->read_tail;
-	nr = head - tail;
+	nr = RING_BUFFER_SIZE(head, tail);
 	/* Skip EOF-chars.. */
 	while (MASK(head) != MASK(tail)) {
 		if (test_bit(MASK(tail), ldata->read_flags) &&
