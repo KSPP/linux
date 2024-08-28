@@ -221,9 +221,10 @@ static void n_tty_kick_worker(const struct tty_struct *tty)
 static ssize_t chars_in_buffer(const struct tty_struct *tty)
 {
 	const struct n_tty_data *ldata = tty->disc_data;
-	size_t head = ldata->icanon ? ldata->canon_head : ldata->commit_head;
+	ssize_t head = ldata->icanon ? ldata->canon_head : ldata->commit_head;
+	ssize_t tail = ldata->read_tail;
 
-	return RING_BUFFER_SIZE(head, ldata->read_tail);
+	return head - tail;
 }
 
 /**
