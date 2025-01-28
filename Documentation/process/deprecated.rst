@@ -109,6 +109,45 @@ For more details, also see array3_size() and flex_array_size(),
 as well as the related check_mul_overflow(), check_add_overflow(),
 check_sub_overflow(), and check_shl_overflow() family of functions.
 
+.. _open_coded_wrap_around:
+
+open-coded intentional arithmetic wrap-around
+---------------------------------------------
+Depending on arithmetic wrap-around without annotations means the
+kernel cannot distinguish between intentional wrap-around and accidental
+wrap-around (when using things like the overflow sanitizers).
+
+For example, where an addition is intended to wrap around::
+
+	magic = counter + rotation;
+
+please use the wrapping_add() helper::
+
+	magic = wrapping_add(int, counter, rotation);
+
+To help minimize needless code churn, the kernel uses overflow idiom exclusions
+(currently only supported by Clang). Some commonly used overflow-dependent code
+patterns will not be instrumented by overflow sanitizers. The currently
+supported patterns are::
+
+	/* wrap-around test */
+	if (var + offset < var) ...
+
+	/* standalone unsigned decrement used in while loop */
+	while(size--)
+
+	/* negated unsigned constants */
+	-1UL;
+	-5U;
+
+In rare cases where helpers aren't available (e.g. in early boot code, etc) but
+overflow instrumentation still needs to be avoided, utilize wrap-around tests
+to check wrap-around outcomes before performing calculations::
+
+  if (var + offset < var) {
+    /* wrap-around has occured */
+  }
+
 simple_strtol(), simple_strtoll(), simple_strtoul(), simple_strtoull()
 ----------------------------------------------------------------------
 The simple_strtol(), simple_strtoll(),
